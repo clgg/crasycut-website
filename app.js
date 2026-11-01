@@ -1,15 +1,43 @@
 'use strict';
 const themes = {
-  fruit: { tag: 'JUICY & JOYFUL', title: '一刀下去，<br>烦恼也切碎了。', description: '苹果、草莓、西瓜轮番登场。找准时机，一划连斩，在果汁飞溅中挑战自己的最好成绩。', features: ['挑战关卡，点亮属于你的星星', '迎战水果 Boss，收获通关的满足感', '解锁刀光，让每一划都有你的风格'], images: [['pastel-hero_fruit.png','新版水果主题主视觉'],['banana.png','香蕉'],['kiwi.png','猕猴桃']], note: '快乐，鲜切现玩。' },
-  letter: { tag: 'SLICE, SPELL & DISCOVER', title: '划开字母，<br>拼出小小新世界。', description: '52 个大小写字母等你发现。切开时听见发音，完成一局后，看收集的字母重新组合成一个个单词。', features: ['大小写字母切割，听见英文发音', '50 个三字母启蒙词，离线也能听读', '发现新单词，慢慢填满你的单词墙'], images: [['pastel-hero_letters.png','新版字母主题主视觉'],['B.png','字母 B'],['C.png','字母 C']], note: '让好奇心，也开花。' }
+  fruit: { tag: 'JUICY & JOYFUL', title: '一刀下去，<br>烦恼也切碎了。', description: '苹果、草莓、西瓜轮番登场。找准时机，一划连斩，在果汁飞溅中挑战自己的最好成绩。', features: ['水果闯关，点亮属于你的星星', '迎战水果 Boss，收获通关的满足感', '限时狂欢和禅意时刻还在水果主页'], images: [['pastel-hero_fruit.png','水果主题主视觉'],['banana.png','香蕉'],['kiwi.png','猕猴桃']], note: '快乐，鲜切现玩。', modesTitle: '你的节奏，你说了算。', modesNote: '水果主页是闯关、限时和禅意。', modes: [
+    ['⚑','水果闯关','从第一关开始，躲开炸弹，完成连斩，点亮星星，再去会一会大水果。','给想挑战的你'],
+    ['◷','限时狂欢','60 秒尽情连斩。找准节奏，把这一分钟切出自己的最高分。','给精力满格的你'],
+    ['✿','禅意时刻','没有炸弹，也不用追着漏掉的水果。慢慢切，听果汁溅开的声音。','给想放空的你']
+  ] },
+  letter: { tag: 'SLICE, SPELL & DISCOVER', title: '划开字母，<br>拼出小小新世界。', description: '52 个大小写字母等你发现。切开时听见发音，完成一局后，看收集的字母重新组合成一个个单词。', features: ['大小写字母切割，听见英文发音', '50 个三字母启蒙词，离线也能听读', '发现新单词，慢慢填满你的单词墙'], images: [['pastel-hero_letters.png','字母主题主视觉'],['B.png','字母 B'],['C.png','字母 C']], note: '让好奇心，也开花。', modesTitle: '听音、限时，或慢慢切。', modesNote: '字母主页同样有限时和禅意。', modes: [
+    ['Aa','字母挑战','切开字母就听发音。这一局收集到的字母，结算时会拼成单词。','主玩法'],
+    ['◷','限时狂欢','60 秒听音切字母。时间很短，连斩要更利落。','给精力满格的你'],
+    ['✿','禅意时刻','没有炸弹，轻松切字母。适合先把发音听熟。','给想放空的你']
+  ] },
+  hanzi: { tag: 'LISTEN, THEN CUT', title: '听清楚，<br>再切对那个字。', description: '180 个常用汉字分成一关关来认。字卡停在画面里，只切正在朗读的那个字。同一个字切对 3 次，就算掌握。', features: ['每关大约 20 个字，听音再下刀', '没听清可以再听一遍', '未掌握少于 3 个，这一关就过了'], images: [['pastel-hero_hanzi.png','汉字主题主视觉'],['pencil.png','铅笔'],['rainbow.png','彩虹画笔']], note: '认字，也是一局游戏。', modesTitle: '认完字，还有墙可以看。', modesNote: '汉字主页不放限时和禅意，换成汉字墙和勋章墙。', modes: [
+    ['字','认汉字','开局先听怎么玩，再听这一刀要切的字。切对或切错，都会进入下一个字。','主玩法'],
+    ['墙','汉字墙','已掌握和未掌握分成左右两页。点哪一个字，就朗读哪一个字。','随时复习'],
+    ['章','勋章墙','从识字新芽到字海船长，一共十枚。掌握的字变多，勋章就亮起来。','给想收集的你']
+  ] }
 };
 const tabs = [...document.querySelectorAll('[data-theme]')];
 function selectTheme(tab) {
   const key = tab.dataset.theme;
   const theme = themes[key];
   tabs.forEach(item => { const selected = item === tab; item.setAttribute('aria-selected', String(selected)); item.tabIndex = selected ? 0 : -1; });
-  document.querySelector('#theme-panel').setAttribute('aria-labelledby', tab.id);
-  document.querySelector('#theme-panel').classList.toggle('is-letter', key === 'letter');
+  const panel = document.querySelector('#theme-panel');
+  panel.setAttribute('aria-labelledby', tab.id);
+  panel.classList.toggle('is-letter', key === 'letter');
+  panel.classList.toggle('is-hanzi', key === 'hanzi');
+  document.querySelector('#mode-heading-title').textContent = theme.modesTitle;
+  document.querySelector('#mode-heading-note').textContent = theme.modesNote;
+  document.querySelector('#mode-list').replaceChildren(...theme.modes.map((mode, index) => {
+    const article = document.createElement('article');
+    article.className = 'mode';
+    const number = document.createElement('span'); number.className = 'mode-number'; number.textContent = String(index + 1).padStart(2, '0');
+    const symbol = document.createElement('span'); symbol.className = 'mode-symbol'; symbol.textContent = mode[0];
+    const title = document.createElement('h4'); title.textContent = mode[1];
+    const copy = document.createElement('p'); copy.textContent = mode[2];
+    const label = document.createElement('span'); label.className = 'mode-label'; label.textContent = mode[3];
+    article.append(number, symbol, title, copy, label);
+    return article;
+  }));
   document.querySelector('#theme-tag').textContent = theme.tag;
   document.querySelector('#theme-title').innerHTML = theme.title;
   document.querySelector('#theme-description').textContent = theme.description;
@@ -21,7 +49,8 @@ tabs.forEach((tab, index) => {
   tab.addEventListener('click', () => selectTheme(tab));
   tab.addEventListener('keydown', event => {
     let next;
-    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') next = tabs[(index + 1) % tabs.length];
+    if (event.key === 'ArrowRight') next = tabs[(index + 1) % tabs.length];
+    if (event.key === 'ArrowLeft') next = tabs[(index + tabs.length - 1) % tabs.length];
     if (event.key === 'Home') next = tabs[0];
     if (event.key === 'End') next = tabs.at(-1);
     if (next) { event.preventDefault(); selectTheme(next); next.focus(); }
@@ -31,8 +60,8 @@ const equipment = {
   flame: ['烈焰', '炽热刀光，让每一次连斩都充满能量。通关第 3 关解锁。', 'KNIFE COLLECTION / 刀具'],
   thunder: ['紫电', '利落的紫色锋芒，点亮你的切割瞬间。完成一次五连斩解锁。', 'KNIFE COLLECTION / 刀具'],
   aurora: ['极光', '把绚丽极光握在手中，划出属于你的轨迹。累计获得 12 颗星解锁。', 'KNIFE COLLECTION / 刀具'],
-  pencil: ['铅笔', '熟悉的笔尖，全新的玩法。用铅笔划开字母，留下你的探索笔迹。', 'STATIONERY COLLECTION / 文具'],
-  rainbow: ['彩虹画笔', '把颜色装进每一笔，让字母切割也充满想象力。字母主题中可直接选择。', 'STATIONERY COLLECTION / 文具']
+  pencil: ['铅笔', '字母和汉字都用文具。用铅笔划开字，留下一道笔迹。', 'STATIONERY COLLECTION / 文具'],
+  rainbow: ['彩虹画笔', '把颜色装进每一笔。字母和汉字主题里都可以直接选择。', 'STATIONERY COLLECTION / 文具']
 };
 document.querySelectorAll('[data-equipment]').forEach(button => button.addEventListener('click', () => {
   const key = button.dataset.equipment;
@@ -126,5 +155,5 @@ while (tickerTrack.firstChild) tickerOriginal.append(tickerTrack.firstChild);
 tickerTrack.append(tickerOriginal, tickerOriginal.cloneNode(true));
 if ('IntersectionObserver' in window && !motionPreference.matches) {
   const reveals = new IntersectionObserver(entries => entries.forEach(entry => { if(entry.isIntersecting) { entry.target.classList.add('is-visible'); reveals.unobserve(entry.target); } }), {threshold:.08});
-  document.querySelectorAll('.section-heading, .theme-panel, .modes, .collection-grid, .equipment, .download-box').forEach(element => { element.classList.add('reveal-ready'); reveals.observe(element); });
+  document.querySelectorAll('.section-heading, .theme-panel, .modes, .poem-strip, .collection-grid, .equipment, .download-box').forEach(element => { element.classList.add('reveal-ready'); reveals.observe(element); });
 }
